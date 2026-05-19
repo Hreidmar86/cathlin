@@ -51,22 +51,22 @@ export default function SettingsSection({
       </div>
 
       <div className="setting-grid">
-        <div className="setting-card">
+        <div className="setting-card setting-card-compact admin-card">
           <h3>Admin</h3>
-          <div className="setting-row">
+          <div className="setting-row admin-card-body">
             {!authEnabled ? (
               <p>Adminläge är inte tillgängligt just nu.</p>
             ) : isAdmin ? (
-              <>
-                <p>
+              <div className="admin-status">
+                <p className="admin-status-copy">
                   Inloggad som admin <strong>{userEmail}</strong>.
                 </p>
                 <button className="btn primary" type="button" onClick={handleSignOut}>
                   Logga ut
                 </button>
-              </>
+              </div>
             ) : (
-              <form className="stack" onSubmit={handleSignIn}>
+              <form className="admin-login-form" onSubmit={handleSignIn}>
                 <div className="field-stack">
                   <label htmlFor="adminEmail">E-post</label>
                   <input
@@ -98,7 +98,7 @@ export default function SettingsSection({
                 </button>
               </form>
             )}
-            {status ? <p className="subtle">{status}</p> : null}
+            {status ? <p className={`admin-status-message ${status === "Inloggad." || status === "Utloggad." ? "is-success" : "is-error"}`}>{status}</p> : null}
           </div>
         </div>
 

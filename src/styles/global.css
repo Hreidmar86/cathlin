@@ -857,20 +857,76 @@ textarea.field {
   background: linear-gradient(90deg, var(--orange), var(--lime));
 }
 
+.setting-card p {
+  line-height: 1.7;
+}
+
+.setting-card-compact {
+  align-self: start;
+}
+
+.admin-card {
+  max-width: 520px;
+}
+
+.admin-card-body {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.admin-login-form,
+.admin-status {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-status-copy,
+.admin-status-message {
+  margin: 0;
+}
+
+.admin-status-message {
+  font-size: var(--text-small);
+  line-height: 1.6;
+}
+
+.admin-status-message.is-success {
+  color: rgba(183, 255, 100, 0.9);
+}
+
+.admin-status-message.is-error {
+  color: #ffd0d5;
+}
+
+.gallery-grid-shell {
+  min-height: 320px;
+}
+
+.gallery-grid-shell.is-empty {
+  display: grid;
+}
+
+.gallery-empty-state {
+  min-height: 320px;
+  padding: 32px 28px;
+}
+
 .gallery-grid {
-  columns: 2;
-  column-gap: 18px;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
 }
 
 .gallery-card {
-  display: inline-block;
+  display: block;
   width: 100%;
-  margin-bottom: 18px;
   overflow: hidden;
 }
 
-.setting-card p {
-  line-height: 1.7;
+.gallery-image {
+  aspect-ratio: 0.84;
 }
 
 .modal-layer,
@@ -1079,7 +1135,7 @@ textarea.field {
   }
 
   .gallery-grid {
-    columns: 3;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 

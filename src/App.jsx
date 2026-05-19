@@ -248,7 +248,7 @@ export default function App() {
             />
 
             <StatsSection stats={stats} />
-            <GallerySection items={galleryItems} onOpenGallery={setGalleryItem} />
+            <GallerySection items={galleryItems} totalCatches={derivedCatches.length} onOpenGallery={setGalleryItem} />
 
             <SettingsSection
               authEnabled={authEnabled}
