@@ -4,7 +4,7 @@ export default function CatchCard({ item, canEdit, deleting, onEdit, onDelete, o
   return (
     <article className="feed-card">
       <div className="feed-media">
-        {item.photoUrl ? <img src={item.photoUrl} alt={`${item.species} fångad av ${item.angler}`} loading="lazy" /> : null}
+        {item.imageUrl ? <img src={item.imageUrl} alt={`${item.species} fångad av ${item.angler}`} loading="lazy" /> : null}
         <div className="feed-badges">
           <span className="badge hot">{item.species}</span>
           <span className="badge">{item.angler}</span>
@@ -17,12 +17,12 @@ export default function CatchCard({ item, canEdit, deleting, onEdit, onDelete, o
           <div>
             <h3>{item.tripName || item.species}</h3>
             <p className="subtle">
-              {formatDate(item.date)} · {item.location || "Plats saknas"}
+              {formatDate(item.caughtAt)} · {item.location || "Plats saknas"}
             </p>
           </div>
           <div className="spec-line">
-            <span className="spec-chip">{formatNumber(item.length, "cm")}</span>
-            <span className="spec-chip">{formatNumber(item.weight, "kg", 1)}</span>
+            <span className="spec-chip">{formatNumber(item.lengthCm, "cm")}</span>
+            <span className="spec-chip">{formatNumber(item.weightKg, "kg", 1)}</span>
           </div>
         </div>
 
@@ -47,7 +47,7 @@ export default function CatchCard({ item, canEdit, deleting, onEdit, onDelete, o
         ) : null}
 
         <div className="feed-actions">
-          {item.photoUrl ? (
+          {item.imageUrl ? (
             <button className="icon-btn" type="button" onClick={() => onOpenGallery(item)}>
               Visa bild
             </button>

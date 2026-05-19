@@ -1,5 +1,13 @@
 import { clampNumber, normalizeDate, sanitizeArray, sanitizeText } from "./format";
 
+function getImageUrl(raw) {
+  if (typeof raw.imageUrl === "string") return raw.imageUrl;
+  if (typeof raw.image_url === "string") return raw.image_url;
+  if (typeof raw.photoUrl === "string") return raw.photoUrl;
+  if (typeof raw.photo_url === "string") return raw.photo_url;
+  return "";
+}
+
 export function normalizeCatch(raw) {
   if (!raw || typeof raw !== "object") return null;
 
@@ -7,15 +15,15 @@ export function normalizeCatch(raw) {
     id: String(raw.id || ""),
     angler: sanitizeText(raw.angler, 24) || "Okänd",
     species: sanitizeText(raw.species, 24) || "Fisk",
-    length: clampNumber(raw.length, 0, 250),
-    weight: clampNumber(raw.weight, 0, 200),
-    date: normalizeDate(raw.date),
+    lengthCm: clampNumber(raw.lengthCm ?? raw.length_cm ?? raw.length, 0, 250),
+    weightKg: clampNumber(raw.weightKg ?? raw.weight_kg ?? raw.weight, 0, 200),
+    caughtAt: normalizeDate(raw.caughtAt ?? raw.caught_at ?? raw.date),
     location: sanitizeText(raw.location, 48),
     method: sanitizeText(raw.method, 32),
     weather: sanitizeText(raw.weather, 32),
     lure: sanitizeText(raw.lure, 32),
     note: sanitizeText(raw.note, 280),
-    photoUrl: typeof raw.photoUrl === "string" ? raw.photoUrl : typeof raw.photo_url === "string" ? raw.photo_url : "",
+    imageUrl: getImageUrl(raw),
     mood: sanitizeText(raw.mood, 24),
     tags: sanitizeArray(raw.tags),
     released: Boolean(raw.released ?? true),
@@ -30,19 +38,19 @@ export function mapCatchRow(row) {
   return normalizeCatch(row);
 }
 
-export function toCatchRow(values, photoUrl, createdBy) {
+export function toCatchRow(values, imageUrl, createdBy) {
   return {
     angler: sanitizeText(values.angler, 24),
     species: sanitizeText(values.species, 24),
-    length: clampNumber(values.length, 0, 250),
-    weight: clampNumber(values.weight, 0, 200),
-    date: normalizeDate(values.date),
+    length_cm: clampNumber(values.lengthCm ?? values.length, 0, 250),
+    weight_kg: clampNumber(values.weightKg ?? values.weight, 0, 200),
+    caught_at: normalizeDate(values.caughtAt ?? values.date),
     location: sanitizeText(values.location, 48),
     method: sanitizeText(values.method, 32),
     weather: sanitizeText(values.weather, 32),
     lure: sanitizeText(values.lure, 32),
     note: sanitizeText(values.note, 280),
-    photo_url: photoUrl || "",
+    image_url: imageUrl || "",
     mood: sanitizeText(values.mood, 24),
     tags: sanitizeArray(values.tags),
     released: Boolean(values.released),

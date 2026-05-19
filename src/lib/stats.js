@@ -12,18 +12,18 @@ export function groupCount(items, key) {
   return Array.from(map.entries()).sort((a, b) => b[1] - a[1]);
 }
 
-export function getTopCatch(items, compareKey = "length") {
+export function getTopCatch(items, compareKey = "lengthCm") {
   return [...items].sort((a, b) => Number(b[compareKey] || 0) - Number(a[compareKey] || 0))[0] || null;
 }
 
-export function getTopSpecies(items, species, compareKey = "length") {
+export function getTopSpecies(items, species, compareKey = "lengthCm") {
   return [...items]
     .filter((item) => item.species.toLowerCase() === species.toLowerCase())
     .sort((a, b) => Number(b[compareKey] || 0) - Number(a[compareKey] || 0))[0] || null;
 }
 
 export function scoreCatch(item) {
-  return (Number(item.length) || 0) * 0.7 + (Number(item.weight) || 0) * 18;
+  return (Number(item.lengthCm) || 0) * 0.7 + (Number(item.weightKg) || 0) * 18;
 }
 
 export function getBestAngler(items) {
@@ -32,7 +32,7 @@ export function getBestAngler(items) {
     const current = map.get(item.angler) || { count: 0, score: 0, totalWeight: 0 };
     current.count += 1;
     current.score += scoreCatch(item);
-    current.totalWeight += Number(item.weight) || 0;
+    current.totalWeight += Number(item.weightKg) || 0;
     map.set(item.angler, current);
   });
   return Array.from(map.entries()).sort(
@@ -41,13 +41,13 @@ export function getBestAngler(items) {
 }
 
 export function getLatestCatch(items) {
-  return [...items].sort((a, b) => new Date(b.date) - new Date(a.date))[0] || null;
+  return [...items].sort((a, b) => new Date(b.caughtAt) - new Date(a.caughtAt))[0] || null;
 }
 
 export function getMonthlyCounts(items) {
   const months = new Map();
   items.forEach((item) => {
-    const key = item.date?.slice(0, 7) || "okänd";
+    const key = item.caughtAt?.slice(0, 7) || "okänd";
     months.set(key, (months.get(key) || 0) + 1);
   });
   return Array.from(months.entries()).sort((a, b) => a[0].localeCompare(b[0]));
@@ -58,15 +58,15 @@ export function getDerivedCatches(items) {
   const bestWeightBySpecies = new Map();
 
   items.forEach((item) => {
-    bestLengthBySpecies.set(item.species, Math.max(bestLengthBySpecies.get(item.species) || 0, Number(item.length) || 0));
-    bestWeightBySpecies.set(item.species, Math.max(bestWeightBySpecies.get(item.species) || 0, Number(item.weight) || 0));
+    bestLengthBySpecies.set(item.species, Math.max(bestLengthBySpecies.get(item.species) || 0, Number(item.lengthCm) || 0));
+    bestWeightBySpecies.set(item.species, Math.max(bestWeightBySpecies.get(item.species) || 0, Number(item.weightKg) || 0));
   });
 
   return items.map((item) => ({
     ...item,
     personalBest:
-      (Number(item.length) || 0) === bestLengthBySpecies.get(item.species) ||
-      (Number(item.weight) || 0) === bestWeightBySpecies.get(item.species)
+      (Number(item.lengthCm) || 0) === bestLengthBySpecies.get(item.species) ||
+      (Number(item.weightKg) || 0) === bestWeightBySpecies.get(item.species)
   }));
 }
 
@@ -74,7 +74,7 @@ export function buildDashboardMetrics(items) {
   const total = items.length;
   const biggestPike = getTopSpecies(items, "Gädda");
   const biggestPerch = getTopSpecies(items, "Abborre");
-  const heaviest = getTopCatch(items, "weight");
+  const heaviest = getTopCatch(items, "weightKg");
   const bestAngler = getBestAngler(items);
   const topMethod = groupCount(items, "method")[0];
   const bestSpot = groupCount(items, "location")[0];
@@ -96,12 +96,12 @@ export function buildStats(items) {
   return {
     species: groupCount(items, "species"),
     anglers: groupCount(items, "angler"),
-    lengths: [...items].sort((a, b) => b.length - a.length).slice(0, 5),
-    weights: [...items].sort((a, b) => b.weight - a.weight).slice(0, 5),
+    lengths: [...items].sort((a, b) => b.lengthCm - a.lengthCm).slice(0, 5),
+    weights: [...items].sort((a, b) => b.weightKg - a.weightKg).slice(0, 5),
     months: getMonthlyCounts(items),
     spots: groupCount(items, "location").slice(0, 5),
-    averageLength: average(items.map((item) => item.length).filter(Boolean), 1),
-    averageWeight: average(items.map((item) => item.weight).filter(Boolean), 2),
+    averageLength: average(items.map((item) => item.lengthCm).filter(Boolean), 1),
+    averageWeight: average(items.map((item) => item.weightKg).filter(Boolean), 2),
     releaseRate: items.length ? Math.round((items.filter((item) => item.released).length / items.length) * 100) : 0
   };
 }

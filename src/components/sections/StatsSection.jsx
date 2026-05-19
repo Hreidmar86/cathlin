@@ -64,7 +64,7 @@ function Leaderboard({ rows, keyName, unit, decimals = 0 }) {
             <span>{`${index + 1}. ${item.species} · ${item.angler}`}</span>
             <strong>{formatNumber(item[keyName], unit, decimals)}</strong>
           </div>
-          <div className="tiny">{`${item.location || "Plats saknas"} · ${item.date}`}</div>
+          <div className="tiny">{`${item.location || "Plats saknas"} · ${item.caughtAt}`}</div>
         </li>
       ))}
     </ol>
@@ -132,12 +132,12 @@ export default function StatsSection({ stats }) {
 
         <article className="stat-card">
           <h3>Längdtopplista</h3>
-          {stats.lengths.length ? <Leaderboard rows={stats.lengths} keyName="length" unit="cm" /> : <EmptyMini message="Ingen längddata än" />}
+          {stats.lengths.length ? <Leaderboard rows={stats.lengths} keyName="lengthCm" unit="cm" /> : <EmptyMini message="Ingen längddata än" />}
         </article>
 
         <article className="stat-card">
           <h3>Vikttopplista</h3>
-          {stats.weights.length ? <Leaderboard rows={stats.weights} keyName="weight" unit="kg" decimals={1} /> : <EmptyMini message="Ingen viktdata än" />}
+          {stats.weights.length ? <Leaderboard rows={stats.weights} keyName="weightKg" unit="kg" decimals={1} /> : <EmptyMini message="Ingen viktdata än" />}
         </article>
 
         <article className="stat-card">

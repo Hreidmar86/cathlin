@@ -13,10 +13,10 @@ export default function GalleryModal({ item, onClose }) {
               <div>
                 <div className="eyebrow">Galleri</div>
                 <h3 id="galleryModalTitle">
-                  {item.species} · {formatNumber(item.length, "cm")}
+                  {item.species} · {formatNumber(item.lengthCm, "cm")}
                 </h3>
                 <p className="subtle">
-                  {item.angler} · {formatDate(item.date)}
+                  {item.angler} · {formatDate(item.caughtAt)}
                 </p>
               </div>
               <button className="close-btn" type="button" onClick={onClose} aria-label="Stäng">
@@ -24,13 +24,13 @@ export default function GalleryModal({ item, onClose }) {
               </button>
             </div>
             <div className="gallery-detail-media">
-              <img src={item.photoUrl} alt={item.species} />
+              <img src={item.imageUrl} alt={item.species} />
             </div>
             <div className="gallery-detail-copy">
               <div className="spec-line">
                 <span className="badge hot">{item.species}</span>
-                <span className="badge">{formatNumber(item.length, "cm")}</span>
-                <span className="badge">{formatNumber(item.weight, "kg", 1)}</span>
+                <span className="badge">{formatNumber(item.lengthCm, "cm")}</span>
+                <span className="badge">{formatNumber(item.weightKg, "kg", 1)}</span>
                 {item.personalBest && <span className="badge">PB</span>}
               </div>
               <p className="subtle">

@@ -63,15 +63,15 @@ export default function HeroSection({
               <div className="stack">
                 <div>
                   <strong className="spotlight-title">
-                    {spotlight.species} · {formatNumber(spotlight.length, "cm")}
+                    {spotlight.species} · {formatNumber(spotlight.lengthCm, "cm")}
                   </strong>
                   <p className="subtle spotlight-meta">
-                    {spotlight.angler} · {formatDate(spotlight.date)} · {spotlight.location || "Plats saknas"}
+                    {spotlight.angler} · {formatDate(spotlight.caughtAt)} · {spotlight.location || "Plats saknas"}
                   </p>
                 </div>
                 <div className="spec-line">
                   <span className="badge hot">{spotlight.tripName || "Highlight-pass"}</span>
-                  <span className="badge">{formatNumber(spotlight.weight, "kg", 1)}</span>
+                  <span className="badge">{formatNumber(spotlight.weightKg, "kg", 1)}</span>
                   <span className="badge">{spotlight.method || "Metod saknas"}</span>
                   {spotlight.personalBest ? <span className="badge">PB</span> : null}
                 </div>

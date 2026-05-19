@@ -29,19 +29,21 @@ export function useCatches() {
     const { data, error: queryError } = await supabase
       .from("catches")
       .select("*")
-      .order("date", { ascending: false })
+      .order("caught_at", { ascending: false })
       .order("created_at", { ascending: false });
 
     if (queryError) {
+      console.error("Failed to fetch catches from Supabase:", queryError);
+
       if (import.meta.env.DEV) {
         setCatches(DEMO_CATCHES);
         setSource("demo");
-        setError(`Supabase-fel, demo används: ${queryError.message}`);
       } else {
         setCatches([]);
         setSource("supabase");
-        setError(queryError.message);
       }
+
+      setError(queryError.message || "Okänt Supabase-fel.");
       setLoading(false);
       return;
     }

@@ -15,18 +15,18 @@ export default function DashboardSection({ metrics }) {
     metricCard("Total fångst", metrics.total, metrics.total ? `${pluralize(metrics.total, "fisk", "fiskar")} loggade` : "Tom logg än så länge"),
     metricCard(
       "Största gädda",
-      metrics.biggestPike ? formatNumber(metrics.biggestPike.length, "cm") : "Ingen än",
-      metrics.biggestPike ? `${metrics.biggestPike.angler} · ${formatDate(metrics.biggestPike.date)}` : "Logga gädda för att fylla kortet"
+      metrics.biggestPike ? formatNumber(metrics.biggestPike.lengthCm, "cm") : "Ingen än",
+      metrics.biggestPike ? `${metrics.biggestPike.angler} · ${formatDate(metrics.biggestPike.caughtAt)}` : "Logga gädda för att fylla kortet"
     ),
     metricCard(
       "Största abborre",
-      metrics.biggestPerch ? formatNumber(metrics.biggestPerch.length, "cm") : "Ingen än",
-      metrics.biggestPerch ? `${metrics.biggestPerch.angler} · ${formatDate(metrics.biggestPerch.date)}` : "Logga abborre för att fylla kortet"
+      metrics.biggestPerch ? formatNumber(metrics.biggestPerch.lengthCm, "cm") : "Ingen än",
+      metrics.biggestPerch ? `${metrics.biggestPerch.angler} · ${formatDate(metrics.biggestPerch.caughtAt)}` : "Logga abborre för att fylla kortet"
     ),
     metricCard(
       "Tyngsta fisk",
-      metrics.heaviest ? formatNumber(metrics.heaviest.weight, "kg", 1) : "Ingen än",
-      metrics.heaviest ? `${metrics.heaviest.species} · ${formatNumber(metrics.heaviest.length, "cm")}` : "Lägg till vikt för ranking"
+      metrics.heaviest ? formatNumber(metrics.heaviest.weightKg, "kg", 1) : "Ingen än",
+      metrics.heaviest ? `${metrics.heaviest.species} · ${formatNumber(metrics.heaviest.lengthCm, "cm")}` : "Lägg till vikt för ranking"
     ),
     metricCard(
       "Bästa fiskare",
@@ -46,7 +46,7 @@ export default function DashboardSection({ metrics }) {
     metricCard(
       "Senaste turen",
       metrics.latestTrip?.tripName || metrics.latestTrip?.location || metrics.latestTrip?.species || "Ingen än",
-      metrics.latestTrip ? `${formatDate(metrics.latestTrip.date)} · ${metrics.latestTrip.angler}` : "Nästa fisk dyker upp här"
+      metrics.latestTrip ? `${formatDate(metrics.latestTrip.caughtAt)} · ${metrics.latestTrip.angler}` : "Nästa fisk dyker upp här"
     )
   ];
 

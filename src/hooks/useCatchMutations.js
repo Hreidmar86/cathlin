@@ -47,13 +47,13 @@ export function useCatchMutations({ user, onChanged }) {
 
     setSaving(true);
     try {
-      let photoUrl = "";
+      let imageUrl = "";
       if (photoFile) {
         const upload = await uploadCatchPhoto(photoFile, values.species);
-        photoUrl = upload.publicUrl;
+        imageUrl = upload.publicUrl;
       }
 
-      const payload = toCatchRow(values, photoUrl, user?.id);
+      const payload = toCatchRow(values, imageUrl, user?.id);
       const { error } = await supabase.from("catches").insert(payload);
       if (error) throw error;
       await onChanged?.();
@@ -69,22 +69,22 @@ export function useCatchMutations({ user, onChanged }) {
 
     setSaving(true);
     try {
-      let photoUrl = existingCatch.photoUrl || "";
+      let imageUrl = existingCatch.imageUrl || "";
 
       if (photoFile) {
         const upload = await uploadCatchPhoto(photoFile, values.species);
-        photoUrl = upload.publicUrl;
-        if (existingCatch.photoUrl) {
-          await deleteStorageObject(existingCatch.photoUrl);
+        imageUrl = upload.publicUrl;
+        if (existingCatch.imageUrl) {
+          await deleteStorageObject(existingCatch.imageUrl);
         }
       } else if (removePhoto) {
-        if (existingCatch.photoUrl) {
-          await deleteStorageObject(existingCatch.photoUrl);
+        if (existingCatch.imageUrl) {
+          await deleteStorageObject(existingCatch.imageUrl);
         }
-        photoUrl = "";
+        imageUrl = "";
       }
 
-      const payload = toCatchRow(values, photoUrl);
+      const payload = toCatchRow(values, imageUrl);
       const { error } = await supabase.from("catches").update(payload).eq("id", existingCatch.id);
       if (error) throw error;
       await onChanged?.();
@@ -102,8 +102,8 @@ export function useCatchMutations({ user, onChanged }) {
     try {
       const { error } = await supabase.from("catches").delete().eq("id", catchItem.id);
       if (error) throw error;
-      if (catchItem.photoUrl) {
-        await deleteStorageObject(catchItem.photoUrl);
+      if (catchItem.imageUrl) {
+        await deleteStorageObject(catchItem.imageUrl);
       }
       await onChanged?.();
     } finally {

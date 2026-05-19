@@ -27,11 +27,11 @@ export default function GallerySection({ items, onOpenGallery }) {
               onClick={() => onOpenGallery(item)}
             >
               <div className="gallery-image">
-                <img src={item.photoUrl} alt={item.species} loading="lazy" />
+                <img src={item.imageUrl} alt={item.species} loading="lazy" />
                 <div className="gallery-overlay">
                   <span className="badge hot">{item.species}</span>
-                  <span className="badge">{formatNumber(item.length, "cm")}</span>
-                  <span className="badge">{formatNumber(item.weight, "kg", 1)}</span>
+                  <span className="badge">{formatNumber(item.lengthCm, "cm")}</span>
+                  <span className="badge">{formatNumber(item.weightKg, "kg", 1)}</span>
                 </div>
               </div>
             </button>

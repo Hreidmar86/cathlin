@@ -8,9 +8,9 @@ function buildInitialState(catchItem) {
   return {
     species: catchItem?.species || "",
     angler: catchItem?.angler || "",
-    length: catchItem?.length || "",
-    weight: catchItem?.weight || "",
-    date: catchItem?.date || normalizeDate(new Date()),
+    lengthCm: catchItem?.lengthCm || "",
+    weightKg: catchItem?.weightKg || "",
+    caughtAt: catchItem?.caughtAt || normalizeDate(new Date()),
     tripName: catchItem?.tripName || "",
     location: catchItem?.location || "",
     method: catchItem?.method || "",
@@ -26,13 +26,13 @@ function buildInitialState(catchItem) {
 export default function CatchFormModal({ open, catchItem, onClose, onSubmit, saving }) {
   const [form, setForm] = useState(buildInitialState(catchItem));
   const [photoFile, setPhotoFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(catchItem?.photoUrl || "");
+  const [previewUrl, setPreviewUrl] = useState(catchItem?.imageUrl || "");
   const [removePhoto, setRemovePhoto] = useState(false);
 
   useEffect(() => {
     setForm(buildInitialState(catchItem));
     setPhotoFile(null);
-    setPreviewUrl(catchItem?.photoUrl || "");
+    setPreviewUrl(catchItem?.imageUrl || "");
     setRemovePhoto(false);
   }, [catchItem, open]);
 
@@ -88,7 +88,7 @@ export default function CatchFormModal({ open, catchItem, onClose, onSubmit, sav
             <div>
               <div className="eyebrow">{catchItem ? "Redigera fångst" : "Ny fångst"}</div>
               <h3 id="formModalTitle">{title}</h3>
-              <p className="subtle">Sparas i Supabase-tabellen `catches` och laddar upp bild till Storage.</p>
+              <p className="subtle">Sparas i fångstloggen och laddar upp bild när du väljer ett foto.</p>
             </div>
             <button className="close-btn" type="button" onClick={onClose} aria-label="Stäng">
               ×
@@ -139,15 +139,39 @@ export default function CatchFormModal({ open, catchItem, onClose, onSubmit, sav
               </div>
               <div className="field-stack">
                 <label htmlFor="lengthInput">Längd i cm</label>
-                <input id="lengthInput" className="field" type="number" min="0" step="0.1" value={form.length} onChange={(event) => updateField("length", event.target.value)} required />
+                <input
+                  id="lengthInput"
+                  className="field"
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={form.lengthCm}
+                  onChange={(event) => updateField("lengthCm", event.target.value)}
+                  required
+                />
               </div>
               <div className="field-stack">
                 <label htmlFor="weightInput">Vikt i kg</label>
-                <input id="weightInput" className="field" type="number" min="0" step="0.01" value={form.weight} onChange={(event) => updateField("weight", event.target.value)} />
+                <input
+                  id="weightInput"
+                  className="field"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={form.weightKg}
+                  onChange={(event) => updateField("weightKg", event.target.value)}
+                />
               </div>
               <div className="field-stack">
                 <label htmlFor="dateInput">Datum</label>
-                <input id="dateInput" className="field" type="date" value={form.date} onChange={(event) => updateField("date", event.target.value)} required />
+                <input
+                  id="dateInput"
+                  className="field"
+                  type="date"
+                  value={form.caughtAt}
+                  onChange={(event) => updateField("caughtAt", event.target.value)}
+                  required
+                />
               </div>
               <div className="field-stack">
                 <label htmlFor="tripInput">Tur/pass</label>
@@ -198,14 +222,11 @@ export default function CatchFormModal({ open, catchItem, onClose, onSubmit, sav
             </div>
 
             <div className="preview-shell">
-              <div className="preview-frame">
-                {previewUrl ? <img src={previewUrl} alt="Förhandsvisning" /> : "Bild laddas upp till Supabase Storage när du sparar."}
-              </div>
+              <div className="preview-frame">{previewUrl ? <img src={previewUrl} alt="Förhandsvisning" /> : "Välj ett foto för att lägga till en bild i fångsten."}</div>
               <label className="btn soft file-input">
                 Välj foto
                 <input type="file" accept="image/*" onChange={handlePhotoChange} />
               </label>
-              <span className="helper">Filen förhandsvisas lokalt men sparas som Storage-objekt, inte i localStorage.</span>
             </div>
 
             <div className="feed-actions">

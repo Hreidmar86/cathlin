@@ -102,9 +102,9 @@ export default function App() {
     });
 
     items.sort((a, b) => {
-      if (filters.sort === "lengthDesc") return b.length - a.length;
-      if (filters.sort === "weightDesc") return b.weight - a.weight;
-      return new Date(b.date) - new Date(a.date);
+      if (filters.sort === "lengthDesc") return b.lengthCm - a.lengthCm;
+      if (filters.sort === "weightDesc") return b.weightKg - a.weightKg;
+      return new Date(b.caughtAt) - new Date(a.caughtAt);
     });
 
     return items;
@@ -114,7 +114,7 @@ export default function App() {
   const stats = useMemo(() => buildStats(derivedCatches), [derivedCatches]);
   const speciesOptions = useMemo(() => [...new Set(derivedCatches.map((item) => item.species))], [derivedCatches]);
   const anglerOptions = useMemo(() => [...new Set(derivedCatches.map((item) => item.angler))], [derivedCatches]);
-  const galleryItems = useMemo(() => derivedCatches.filter((item) => item.photoUrl), [derivedCatches]);
+  const galleryItems = useMemo(() => derivedCatches.filter((item) => item.imageUrl), [derivedCatches]);
   const spotlight = useMemo(() => [...derivedCatches].sort((a, b) => scoreCatch(b) - scoreCatch(a))[0] || null, [derivedCatches]);
   const bestAngler = useMemo(() => getBestAngler(derivedCatches), [derivedCatches]);
 
@@ -123,7 +123,7 @@ export default function App() {
       return "Loggen väntar fortfarande på säsongens första fisk.";
     }
 
-    const avgLength = average(derivedCatches.map((item) => item.length).filter(Boolean), 1);
+    const avgLength = average(derivedCatches.map((item) => item.lengthCm).filter(Boolean), 1);
     const uniqueSpots = new Set(derivedCatches.map((item) => item.location).filter(Boolean)).size;
     return `${derivedCatches.length} loggade fångster, ${uniqueSpots} platser och ett snitt på ${formatNumber(avgLength, "cm", 1)}. Här samlas turerna, toppfisken och de bästa minnena från säsongen.`;
   }, [derivedCatches]);
@@ -163,7 +163,7 @@ export default function App() {
   }
 
   async function handleDelete(catchItem) {
-    const confirmed = window.confirm(`Ta bort ${catchItem.species} från ${catchItem.date}?`);
+    const confirmed = window.confirm(`Ta bort ${catchItem.species} från ${catchItem.caughtAt}?`);
     if (!confirmed) return;
 
     try {
@@ -215,7 +215,7 @@ export default function App() {
             {error && isAdmin ? (
               <div className="surface warning-panel">
                 <strong>Systemstatus</strong>
-                <p>{usingDemo ? "Demo-läge används just nu." : error}</p>
+                <p>{usingDemo ? `${error} Demo-läge används just nu.` : error}</p>
               </div>
             ) : null}
 
