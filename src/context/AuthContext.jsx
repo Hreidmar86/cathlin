@@ -4,6 +4,21 @@ import { supabase, isSupabaseConfigured } from "../lib/supabase";
 
 const AuthContext = createContext(null);
 
+const USERNAME_TO_EMAIL = {
+  cathyyy: "cathyyy@cr.local",
+  robin: "robin@cr.local"
+};
+
+const EMAIL_TO_USERNAME = {
+  "cathyyy@cr.local": "Cathyyy",
+  "robin@cr.local": "Robin"
+};
+
+function resolveEmailFromUsername(username) {
+  const normalizedUsername = String(username || "").trim().toLowerCase();
+  return USERNAME_TO_EMAIL[normalizedUsername] || "";
+}
+
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(isSupabaseConfigured);
@@ -33,17 +48,24 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  async function signInWithPassword(email, password) {
+  async function signInWithPassword(username, password) {
     if (!supabase) throw new Error("Supabase är inte konfigurerat.");
 
-    const normalizedEmail = String(email || "").trim().toLowerCase();
+    const email = resolveEmailFromUsername(username);
     const normalizedPassword = String(password || "");
+
+    if (!email) {
+      throw new Error("Fel användarnamn eller lösenord.");
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
-      email: normalizedEmail,
+      email,
       password: normalizedPassword
     });
 
-    if (error) throw error;
+    if (error) {
+      throw new Error("Fel användarnamn eller lösenord.");
+    }
   }
 
   async function signOut() {
@@ -54,10 +76,13 @@ export function AuthProvider({ children }) {
 
   const value = useMemo(() => {
     const email = session?.user?.email?.toLowerCase() || "";
+    const username = EMAIL_TO_USERNAME[email] || "";
+
     return {
       session,
       user: session?.user ?? null,
       userEmail: email,
+      username,
       isAdmin: Boolean(email && ADMIN_EMAILS.includes(email)),
       loading,
       authEnabled: isSupabaseConfigured,

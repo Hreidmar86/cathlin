@@ -1,17 +1,16 @@
 import { useState } from "react";
-import { ADMIN_EMAILS } from "../../lib/config";
 
 export default function SettingsSection({
   authEnabled,
   usingDemo,
-  userEmail,
+  username,
   isAdmin,
   signInWithPassword,
   signOut,
   catches,
   onExport
 }) {
-  const [email, setEmail] = useState(userEmail || ADMIN_EMAILS[0] || "");
+  const [loginName, setLoginName] = useState("Cathyyy");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("");
   const [sending, setSending] = useState(false);
@@ -20,12 +19,13 @@ export default function SettingsSection({
     event.preventDefault();
     setSending(true);
     setStatus("");
+
     try {
-      await signInWithPassword(email, password);
+      await signInWithPassword(loginName, password);
       setPassword("");
       setStatus("Inloggad.");
     } catch (error) {
-      setStatus(error.message || "Fel e-post eller lösenord.");
+      setStatus(error.message || "Fel användarnamn eller lösenord.");
     } finally {
       setSending(false);
     }
@@ -59,7 +59,7 @@ export default function SettingsSection({
             ) : isAdmin ? (
               <div className="admin-status">
                 <p className="admin-status-copy">
-                  Inloggad som admin <strong>{userEmail}</strong>.
+                  Inloggad som <strong>{username || "admin"}</strong>.
                 </p>
                 <button className="btn primary" type="button" onClick={handleSignOut}>
                   Logga ut
@@ -68,16 +68,18 @@ export default function SettingsSection({
             ) : (
               <form className="admin-login-form" onSubmit={handleSignIn}>
                 <div className="field-stack">
-                  <label htmlFor="adminEmail">E-post</label>
+                  <label htmlFor="adminUsername">Användarnamn</label>
                   <input
-                    id="adminEmail"
+                    id="adminUsername"
                     className="field"
-                    type="email"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    placeholder="cathlin@example.com"
+                    type="text"
+                    value={loginName}
+                    onChange={(event) => setLoginName(event.target.value)}
+                    placeholder="Cathyyy"
                     required
-                    autoComplete="email"
+                    autoComplete="username"
+                    autoCapitalize="off"
+                    spellCheck="false"
                   />
                 </div>
                 <div className="field-stack">
@@ -98,7 +100,11 @@ export default function SettingsSection({
                 </button>
               </form>
             )}
-            {status ? <p className={`admin-status-message ${status === "Inloggad." || status === "Utloggad." ? "is-success" : "is-error"}`}>{status}</p> : null}
+            {status ? (
+              <p className={`admin-status-message ${status === "Inloggad." || status === "Utloggad." ? "is-success" : "is-error"}`}>
+                {status}
+              </p>
+            ) : null}
           </div>
         </div>
 
