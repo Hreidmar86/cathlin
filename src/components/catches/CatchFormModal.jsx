@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { normalizeDate } from "../../lib/format";
 
 const DEFAULT_SPECIES = ["Gädda", "Abborre", "Gös", "Öring"];
@@ -28,6 +28,8 @@ export default function CatchFormModal({ open, catchItem, onClose, onSubmit, sav
   const [photoFile, setPhotoFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(catchItem?.imageUrl || "");
   const [removePhoto, setRemovePhoto] = useState(false);
+  const firstInputRef = useRef(null);
+  const closeButtonRef = useRef(null);
 
   useEffect(() => {
     setForm(buildInitialState(catchItem));
@@ -43,6 +45,34 @@ export default function CatchFormModal({ open, catchItem, onClose, onSubmit, sav
       }
     };
   }, [previewUrl]);
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    const previousActiveElement = document.activeElement;
+    document.body.style.overflow = "hidden";
+
+    window.setTimeout(() => {
+      firstInputRef.current?.focus();
+    }, 20);
+
+    function handleKeyDown(event) {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+      if (previousActiveElement && typeof previousActiveElement.focus === "function") {
+        previousActiveElement.focus();
+      }
+    };
+  }, [open, onClose]);
 
   const title = useMemo(() => (catchItem ? "Justera loggen" : "Logga nästa fisk"), [catchItem]);
 
@@ -90,8 +120,8 @@ export default function CatchFormModal({ open, catchItem, onClose, onSubmit, sav
               <h3 id="formModalTitle">{title}</h3>
               <p className="subtle">Sparas i fångstloggen och laddar upp bild när du väljer ett foto.</p>
             </div>
-            <button className="close-btn" type="button" onClick={onClose} aria-label="Stäng">
-              ×
+            <button ref={closeButtonRef} className="close-btn" type="button" onClick={onClose} aria-label="Stäng formulär">
+              Stäng
             </button>
           </div>
 
@@ -131,7 +161,14 @@ export default function CatchFormModal({ open, catchItem, onClose, onSubmit, sav
             <div className="field-grid">
               <div className="field-stack">
                 <label htmlFor="speciesInput">Art</label>
-                <input id="speciesInput" className="field" value={form.species} onChange={(event) => updateField("species", event.target.value)} required />
+                <input
+                  ref={firstInputRef}
+                  id="speciesInput"
+                  className="field"
+                  value={form.species}
+                  onChange={(event) => updateField("species", event.target.value)}
+                  required
+                />
               </div>
               <div className="field-stack">
                 <label htmlFor="anglerInput">Fiskare</label>

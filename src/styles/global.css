@@ -934,7 +934,7 @@ textarea.field {
 .loading-overlay {
   position: fixed;
   inset: 0;
-  z-index: 60;
+  z-index: 120;
   pointer-events: none;
 }
 
@@ -972,6 +972,7 @@ textarea.field {
   opacity: 0;
   transition: transform var(--ease), opacity var(--ease);
   overflow: auto;
+  z-index: 121;
 }
 
 .modal-layer.is-open .modal {

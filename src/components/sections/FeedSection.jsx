@@ -21,8 +21,8 @@ export default function FeedSection({
           <h2>Alla fångster</h2>
         </div>
         {canCreate && (
-          <button className="btn soft" type="button" onClick={() => onOpenForm(null)}>
-            Ny fångst
+          <button className="btn primary" type="button" onClick={() => onOpenForm(null)}>
+            Logga fångst
           </button>
         )}
       </div>
