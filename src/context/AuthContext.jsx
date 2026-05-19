@@ -33,15 +33,16 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  async function signInWithMagicLink(email) {
+  async function signInWithPassword(email, password) {
     if (!supabase) throw new Error("Supabase är inte konfigurerat.");
+
     const normalizedEmail = String(email || "").trim().toLowerCase();
-    const { error } = await supabase.auth.signInWithOtp({
+    const normalizedPassword = String(password || "");
+    const { error } = await supabase.auth.signInWithPassword({
       email: normalizedEmail,
-      options: {
-        shouldCreateUser: true
-      }
+      password: normalizedPassword
     });
+
     if (error) throw error;
   }
 
@@ -60,7 +61,7 @@ export function AuthProvider({ children }) {
       isAdmin: Boolean(email && ADMIN_EMAILS.includes(email)),
       loading,
       authEnabled: isSupabaseConfigured,
-      signInWithMagicLink,
+      signInWithPassword,
       signOut
     };
   }, [session, loading]);

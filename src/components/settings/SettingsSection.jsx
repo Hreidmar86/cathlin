@@ -6,12 +6,13 @@ export default function SettingsSection({
   usingDemo,
   userEmail,
   isAdmin,
-  signInWithMagicLink,
+  signInWithPassword,
   signOut,
   catches,
   onExport
 }) {
   const [email, setEmail] = useState(userEmail || ADMIN_EMAILS[0] || "");
+  const [password, setPassword] = useState("");
   const [status, setStatus] = useState("");
   const [sending, setSending] = useState(false);
 
@@ -20,10 +21,11 @@ export default function SettingsSection({
     setSending(true);
     setStatus("");
     try {
-      await signInWithMagicLink(email);
-      setStatus("Magic link skickad. Kontrollera inkorgen.");
+      await signInWithPassword(email, password);
+      setPassword("");
+      setStatus("Inloggad.");
     } catch (error) {
-      setStatus(error.message || "Kunde inte skicka magic link.");
+      setStatus(error.message || "Fel e-post eller lösenord.");
     } finally {
       setSending(false);
     }
@@ -32,6 +34,7 @@ export default function SettingsSection({
   async function handleSignOut() {
     try {
       await signOut();
+      setPassword("");
       setStatus("Utloggad.");
     } catch (error) {
       setStatus(error.message || "Kunde inte logga ut.");
@@ -65,7 +68,7 @@ export default function SettingsSection({
             ) : (
               <form className="stack" onSubmit={handleSignIn}>
                 <div className="field-stack">
-                  <label htmlFor="adminEmail">Admin-e-post</label>
+                  <label htmlFor="adminEmail">E-post</label>
                   <input
                     id="adminEmail"
                     className="field"
@@ -74,10 +77,24 @@ export default function SettingsSection({
                     onChange={(event) => setEmail(event.target.value)}
                     placeholder="cathlin@example.com"
                     required
+                    autoComplete="email"
+                  />
+                </div>
+                <div className="field-stack">
+                  <label htmlFor="adminPassword">Lösenord</label>
+                  <input
+                    id="adminPassword"
+                    className="field"
+                    type="password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder="Lösenord"
+                    required
+                    autoComplete="current-password"
                   />
                 </div>
                 <button className="btn primary" type="submit" disabled={sending}>
-                  {sending ? "Skickar..." : "Skicka magic link"}
+                  {sending ? "Loggar in..." : "Logga in"}
                 </button>
               </form>
             )}

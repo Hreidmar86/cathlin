@@ -34,7 +34,7 @@ const INITIAL_FILTERS = {
 };
 
 export default function App() {
-  const { isAdmin, userEmail, user, authEnabled, signInWithMagicLink, signOut } = useAuth();
+  const { isAdmin, userEmail, user, authEnabled, signInWithPassword, signOut } = useAuth();
   const { catches, loading, error, source, usingDemo, refresh } = useCatches();
   const { createCatch, updateCatch, deleteCatch, saving, deletingId } = useCatchMutations({
     user,
@@ -255,7 +255,7 @@ export default function App() {
               usingDemo={usingDemo}
               userEmail={userEmail}
               isAdmin={isAdmin}
-              signInWithMagicLink={signInWithMagicLink}
+              signInWithPassword={signInWithPassword}
               signOut={signOut}
               catches={derivedCatches}
               onExport={exportJson}
