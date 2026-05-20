@@ -4,15 +4,19 @@ import { supabase, isSupabaseConfigured } from "../lib/supabase";
 
 const AuthContext = createContext(null);
 
+const LOGIN_USERS = [
+  { username: "Cathyyy", email: ADMIN_EMAILS[0] || "" },
+  { username: "Robin", email: ADMIN_EMAILS[1] || "" }
+];
+
 const USERNAME_TO_EMAIL = {
-  cathyyy: "cathyyy@cr.local",
-  robin: "robin@cr.local"
+  cathyyy: LOGIN_USERS[0].email,
+  robin: LOGIN_USERS[1].email
 };
 
-const EMAIL_TO_USERNAME = {
-  "cathyyy@cr.local": "Cathyyy",
-  "robin@cr.local": "Robin"
-};
+const EMAIL_TO_USERNAME = Object.fromEntries(
+  LOGIN_USERS.filter((user) => user.email).map((user) => [user.email.toLowerCase(), user.username])
+);
 
 function resolveEmailFromUsername(username) {
   const normalizedUsername = String(username || "").trim().toLowerCase();

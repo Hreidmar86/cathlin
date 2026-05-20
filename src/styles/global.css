@@ -397,7 +397,8 @@ button {
 .hero-actions,
 .feed-actions,
 .spec-line,
-.quick-group {
+.quick-group,
+.catch-admin-actions {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
@@ -737,6 +738,12 @@ textarea.field {
   gap: 16px;
 }
 
+.feed-body,
+.trophy-copy {
+  display: grid;
+  gap: 14px;
+}
+
 .feed-media,
 .gallery-detail-media,
 .gallery-image {
@@ -750,6 +757,28 @@ textarea.field {
 
 .feed-media {
   min-height: 300px;
+}
+
+.feed-image-fallback,
+.gallery-image-fallback,
+.trophy-fallback {
+  min-height: 100%;
+  padding: 22px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.gallery-image-fallback {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 155, 82, 0.08), transparent 42%),
+    rgba(255, 255, 255, 0.04);
+}
+
+.gallery-image-fallback-large {
+  min-height: 360px;
 }
 
 .feed-media img,
@@ -816,6 +845,19 @@ textarea.field {
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.04);
   font-size: var(--text-small);
+}
+
+.icon-btn.primary-action {
+  border-color: rgba(183, 255, 100, 0.16);
+  background: rgba(183, 255, 100, 0.08);
+}
+
+.icon-btn:disabled,
+.gallery-nav-btn:disabled,
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
 }
 
 .icon-btn.danger {
@@ -1007,6 +1049,47 @@ textarea.field {
   align-items: start;
 }
 
+.trophy-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.trophy-card {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: var(--bg-panel);
+  overflow: hidden;
+}
+
+.trophy-media {
+  position: relative;
+  min-height: 220px;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.24)),
+    linear-gradient(135deg, rgba(255, 155, 82, 0.08), rgba(183, 255, 100, 0.04));
+}
+
+.trophy-image-btn {
+  width: 100%;
+  height: 100%;
+}
+
+.trophy-image-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.trophy-copy {
+  padding: 18px;
+}
+
+.trophy-copy strong {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+}
+
 .gallery-card {
   display: block;
   width: 100%;
@@ -1102,6 +1185,18 @@ textarea.field {
   padding: 12px;
 }
 
+.upload-panel {
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.upload-panel-copy {
+  display: grid;
+  gap: 6px;
+  padding: 0 4px;
+}
+
 .preview-frame {
   position: relative;
   min-height: 220px;
@@ -1136,6 +1231,33 @@ textarea.field {
 
 .gallery-modal.is-open .modal {
   transform: translateY(0) scale(1);
+}
+
+.modal-confirm {
+  width: min(520px, calc(100% - 24px));
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -46%);
+  border-radius: 28px;
+  border: 1px solid var(--line);
+}
+
+.modal-layer.is-open .modal-confirm {
+  transform: translate(-50%, -50%);
+}
+
+.gallery-viewer-shell {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.gallery-nav-btn {
+  min-width: 52px;
+  min-height: 52px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .gallery-detail-media img {
@@ -1187,7 +1309,7 @@ textarea.field {
   inset: auto 12px 12px;
   z-index: 50;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 8px;
   padding: 10px;
   border-radius: 24px;
@@ -1224,6 +1346,10 @@ textarea.field {
   }
 
   .gallery-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .trophy-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

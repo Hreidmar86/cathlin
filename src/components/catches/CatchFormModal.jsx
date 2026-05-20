@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { normalizeDate } from "../../lib/format";
+import { formatNumber, normalizeDate } from "../../lib/format";
 
 const DEFAULT_SPECIES = ["Gädda", "Abborre", "Gös", "Öring"];
 const DEFAULT_ANGLERS = ["Cathlin", "Robin", "Båda"];
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 
 function buildInitialState(catchItem) {
   return {
@@ -20,11 +21,19 @@ function buildInitialState(catchItem) {
   };
 }
 
+function validatePhotoFile(file) {
+  if (!file) return "";
+  if (!file.type?.startsWith("image/")) return "Bilden måste vara en giltig bildfil.";
+  if (file.size > MAX_IMAGE_BYTES) return "Bilden är för stor. Maxstorlek är 10 MB.";
+  return "";
+}
+
 export default function CatchFormModal({ open, catchItem, onClose, onSubmit, saving }) {
   const [form, setForm] = useState(buildInitialState(catchItem));
   const [photoFile, setPhotoFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(catchItem?.imageUrl || "");
   const [removePhoto, setRemovePhoto] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const firstInputRef = useRef(null);
   const closeButtonRef = useRef(null);
 
@@ -33,6 +42,7 @@ export default function CatchFormModal({ open, catchItem, onClose, onSubmit, sav
     setPhotoFile(null);
     setPreviewUrl(catchItem?.imageUrl || "");
     setRemovePhoto(false);
+    setErrorMessage("");
   }, [catchItem, open]);
 
   useEffect(() => {
@@ -72,6 +82,10 @@ export default function CatchFormModal({ open, catchItem, onClose, onSubmit, sav
   }, [open, onClose]);
 
   const title = useMemo(() => (catchItem ? "Justera loggen" : "Logga nästa fisk"), [catchItem]);
+  const selectedFileInfo = useMemo(() => {
+    if (!photoFile) return "";
+    return `${photoFile.name} · ${formatNumber(photoFile.size / (1024 * 1024), "MB", 1)}`;
+  }, [photoFile]);
 
   function updateField(key, value) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -80,9 +94,19 @@ export default function CatchFormModal({ open, catchItem, onClose, onSubmit, sav
   function handlePhotoChange(event) {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    const nextError = validatePhotoFile(file);
+    if (nextError) {
+      setErrorMessage(nextError);
+      event.target.value = "";
+      return;
+    }
+
     if (previewUrl?.startsWith("blob:")) {
       URL.revokeObjectURL(previewUrl);
     }
+
+    setErrorMessage("");
     setPhotoFile(file);
     setPreviewUrl(URL.createObjectURL(file));
     setRemovePhoto(false);
@@ -95,15 +119,27 @@ export default function CatchFormModal({ open, catchItem, onClose, onSubmit, sav
     setPhotoFile(null);
     setPreviewUrl("");
     setRemovePhoto(true);
+    setErrorMessage("");
   }
 
-  function submit(event) {
+  async function submit(event) {
     event.preventDefault();
-    onSubmit({
-      values: form,
-      photoFile,
-      removePhoto
-    });
+    const nextError = validatePhotoFile(photoFile);
+    if (nextError) {
+      setErrorMessage(nextError);
+      return;
+    }
+
+    setErrorMessage("");
+    try {
+      await onSubmit({
+        values: form,
+        photoFile,
+        removePhoto
+      });
+    } catch (error) {
+      setErrorMessage(error.message || "Kunde inte spara fångsten.");
+    }
   }
 
   return (
@@ -234,7 +270,7 @@ export default function CatchFormModal({ open, catchItem, onClose, onSubmit, sav
                 {`Återutsatt: ${form.released ? "Ja" : "Nej"}`}
               </button>
               <button className="toggle-pill" type="button" onClick={handleResetPhoto}>
-                Nollställ bild
+                {previewUrl ? "Ta bort bild" : "Nollställ bild"}
               </button>
             </div>
 
@@ -243,12 +279,19 @@ export default function CatchFormModal({ open, catchItem, onClose, onSubmit, sav
               <textarea id="noteInput" className="field" value={form.note} onChange={(event) => updateField("note", event.target.value)} />
             </div>
 
-            <div className="preview-shell">
+            <div className="preview-shell upload-panel">
               <div className="preview-frame">{previewUrl ? <img src={previewUrl} alt="Förhandsvisning" /> : "Välj ett foto för att lägga till en bild i fångsten."}</div>
-              <label className="btn soft file-input">
-                Välj foto
-                <input type="file" accept="image/*" onChange={handlePhotoChange} />
-              </label>
+              <div className="upload-panel-copy">
+                <p className="subtle">Mobil öppnar kameran direkt när det stöds. Endast bilder, max 10 MB.</p>
+                {selectedFileInfo ? <p className="tiny">{selectedFileInfo}</p> : null}
+                {errorMessage ? <p className="admin-status-message is-error">{errorMessage}</p> : null}
+              </div>
+              <div className="feed-actions">
+                <label className="btn soft file-input">
+                  {previewUrl ? "Byt foto" : "Ta foto eller välj bild"}
+                  <input type="file" accept="image/*" capture="environment" onChange={handlePhotoChange} />
+                </label>
+              </div>
             </div>
 
             <div className="feed-actions">

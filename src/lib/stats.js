@@ -70,6 +70,30 @@ export function getDerivedCatches(items) {
   }));
 }
 
+export function buildTrophyWall(items) {
+  const bestBySpecies = new Map();
+
+  items.forEach((item) => {
+    const existing = bestBySpecies.get(item.species);
+    if (!existing) {
+      bestBySpecies.set(item.species, item);
+      return;
+    }
+
+    const byLength = Number(item.lengthCm || 0) - Number(existing.lengthCm || 0);
+    const byWeight = Number(item.weightKg || 0) - Number(existing.weightKg || 0);
+    const byDate = new Date(item.caughtAt) - new Date(existing.caughtAt);
+
+    if (byLength > 0 || (byLength === 0 && byWeight > 0) || (byLength === 0 && byWeight === 0 && byDate > 0)) {
+      bestBySpecies.set(item.species, item);
+    }
+  });
+
+  return Array.from(bestBySpecies.values()).sort(
+    (a, b) => b.lengthCm - a.lengthCm || b.weightKg - a.weightKg || new Date(b.caughtAt) - new Date(a.caughtAt)
+  );
+}
+
 export function buildDashboardMetrics(items) {
   const total = items.length;
   const biggestPike = getTopSpecies(items, "Gädda");

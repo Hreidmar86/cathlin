@@ -1,4 +1,24 @@
+import { useEffect, useState } from "react";
 import { formatNumber } from "../../lib/format";
+
+function GalleryCardImage({ item }) {
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    setFailed(false);
+  }, [item.id, item.imageUrl]);
+
+  if (!item.imageUrl || failed) {
+    return (
+      <div className="gallery-image-fallback">
+        <strong>Bild saknas</strong>
+        <span className="subtle">Öppna en annan fångst i galleriet.</span>
+      </div>
+    );
+  }
+
+  return <img src={item.imageUrl} alt={item.species} loading="lazy" onError={() => setFailed(true)} />;
+}
 
 export default function GallerySection({ items, totalCatches, onOpenGallery }) {
   const hasCatches = totalCatches > 0;
@@ -25,16 +45,16 @@ export default function GallerySection({ items, totalCatches, onOpenGallery }) {
           </div>
         ) : (
           <div className="gallery-grid">
-            {items.map((item) => (
+            {items.map((item, index) => (
               <button
                 key={item.id}
                 className="gallery-card"
                 type="button"
                 aria-label={`Öppna ${item.species} i galleriet`}
-                onClick={() => onOpenGallery(item)}
+                onClick={() => onOpenGallery(index)}
               >
                 <div className="gallery-image">
-                  <img src={item.imageUrl} alt={item.species} loading="lazy" />
+                  <GalleryCardImage item={item} />
                   <div className="gallery-overlay">
                     <span className="badge hot">{item.species}</span>
                     <span className="badge">{formatNumber(item.lengthCm, "cm")}</span>

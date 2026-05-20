@@ -70,7 +70,7 @@ export default function HeroSection({
                   </p>
                 </div>
                 <div className="spec-line">
-                  <span className="badge hot">{spotlight.tripName || "Highlight-pass"}</span>
+                  <span className="badge hot">{spotlight.species}</span>
                   <span className="badge">{formatNumber(spotlight.weightKg, "kg", 1)}</span>
                   <span className="badge">{spotlight.method || "Metod saknas"}</span>
                   {spotlight.personalBest ? <span className="badge">PB</span> : null}

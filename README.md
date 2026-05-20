@@ -47,7 +47,7 @@ cp .env.example .env
 
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
-- `VITE_ADMIN_EMAILS`
+- `VITE_ADMIN_EMAILS` i ordningen `Cathlin,Robin`
 - `VITE_TEAM_NAME`
 
 Exempel:
@@ -77,7 +77,10 @@ npm run dev
 
 ## Auth-flöde
 
-- Inloggning sker via magic link med Supabase Auth.
+- Inloggning sker via Supabase password auth.
+- UI:t visar fortfarande `Användarnamn` + `Lösenord`.
+- `Cathyyy` mappas till den första e-postadressen i `VITE_ADMIN_EMAILS` (Cathlin).
+- `Robin` mappas till den andra e-postadressen i `VITE_ADMIN_EMAILS` (Robin).
 - UI visar admin-kontroller bara för sessioner vars e-post finns i `VITE_ADMIN_EMAILS`.
 - Den riktiga säkerheten ligger i RLS-policierna i databasen och Storage, inte i frontend.
 
@@ -119,7 +122,7 @@ npm run dev
 
 ## Admin beteende
 
-- logga in med magic link
+- logga in med användarnamn + lösenord
 - skapa catch
 - ladda upp bild
 - ändra catch

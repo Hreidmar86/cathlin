@@ -45,7 +45,7 @@ export default function DashboardSection({ metrics }) {
     ),
     metricCard(
       "Senaste turen",
-      metrics.latestTrip?.tripName || metrics.latestTrip?.location || metrics.latestTrip?.species || "Ingen än",
+      metrics.latestTrip?.location || metrics.latestTrip?.species || "Ingen än",
       metrics.latestTrip ? `${formatDate(metrics.latestTrip.caughtAt)} · ${metrics.latestTrip.angler}` : "Nästa fisk dyker upp här"
     )
   ];

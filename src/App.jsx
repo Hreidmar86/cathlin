@@ -4,22 +4,25 @@ import MobileNav from "./components/layout/MobileNav";
 import TopBar from "./components/layout/TopBar";
 import HeroSection from "./components/sections/HeroSection";
 import DashboardSection from "./components/sections/DashboardSection";
+import TrophyWallSection from "./components/sections/TrophyWallSection";
 import FeedSection from "./components/sections/FeedSection";
 import StatsSection from "./components/sections/StatsSection";
 import GallerySection from "./components/sections/GallerySection";
 import SettingsSection from "./components/settings/SettingsSection";
 import CatchFormModal from "./components/catches/CatchFormModal";
+import DeleteCatchModal from "./components/catches/DeleteCatchModal";
 import GalleryModal from "./components/gallery/GalleryModal";
 import { useAuth } from "./context/AuthContext";
 import { useCatches } from "./hooks/useCatches";
 import { useCatchMutations } from "./hooks/useCatchMutations";
 import { APP_NAME, TEAM_NAME } from "./lib/config";
-import { buildDashboardMetrics, buildStats, getBestAngler, getDerivedCatches, scoreCatch } from "./lib/stats";
+import { buildDashboardMetrics, buildStats, buildTrophyWall, getBestAngler, getDerivedCatches, scoreCatch } from "./lib/stats";
 import { average, formatNumber, pluralize } from "./lib/format";
 
 const SECTIONS = [
   { id: "hero", label: "Översikt", shortLabel: "Start", description: "Logga och säsong" },
-  { id: "feed", label: "Fångster", shortLabel: "Flöde", description: "Turer och minnen" },
+  { id: "feed", label: "Fångster", shortLabel: "Flöde", description: "Senaste fiskarna" },
+  { id: "trophy", label: "Troféer", shortLabel: "PB", description: "Personbästa per art" },
   { id: "stats", label: "Statistik", shortLabel: "Stats", description: "Fångster i siffror" },
   { id: "gallery", label: "Galleri", shortLabel: "Galleri", description: "Bilder från turerna" },
   { id: "settings", label: "Inställningar", shortLabel: "Admin", description: "Admin" }
@@ -45,7 +48,8 @@ export default function App() {
   const [filters, setFilters] = useState(INITIAL_FILTERS);
   const [formCatch, setFormCatch] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
-  const [galleryItem, setGalleryItem] = useState(null);
+  const [galleryIndex, setGalleryIndex] = useState(-1);
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const [toast, setToast] = useState("");
 
   useEffect(() => {
@@ -77,18 +81,7 @@ export default function App() {
   const filteredCatches = useMemo(() => {
     const query = filters.search.toLowerCase();
     const items = derivedCatches.filter((item) => {
-      const haystack = [
-        item.angler,
-        item.species,
-        item.location,
-        item.method,
-        item.weather,
-        item.note,
-        item.tripName,
-        item.lure,
-        item.mood,
-        item.tags.join(" ")
-      ]
+      const haystack = [item.angler, item.species, item.location, item.method, item.weather, item.note, item.lure]
         .join(" ")
         .toLowerCase();
 
@@ -112,9 +105,16 @@ export default function App() {
 
   const dashboardMetrics = useMemo(() => buildDashboardMetrics(derivedCatches), [derivedCatches]);
   const stats = useMemo(() => buildStats(derivedCatches), [derivedCatches]);
+  const trophyWallItems = useMemo(() => buildTrophyWall(derivedCatches), [derivedCatches]);
   const speciesOptions = useMemo(() => [...new Set(derivedCatches.map((item) => item.species))], [derivedCatches]);
   const anglerOptions = useMemo(() => [...new Set(derivedCatches.map((item) => item.angler))], [derivedCatches]);
-  const galleryItems = useMemo(() => derivedCatches.filter((item) => item.imageUrl), [derivedCatches]);
+  const galleryItems = useMemo(
+    () =>
+      derivedCatches
+        .filter((item) => item.imageUrl)
+        .sort((a, b) => new Date(b.caughtAt) - new Date(a.caughtAt) || new Date(b.createdAt || 0) - new Date(a.createdAt || 0)),
+    [derivedCatches]
+  );
   const spotlight = useMemo(() => [...derivedCatches].sort((a, b) => scoreCatch(b) - scoreCatch(a))[0] || null, [derivedCatches]);
   const bestAngler = useMemo(() => getBestAngler(derivedCatches), [derivedCatches]);
 
@@ -147,28 +147,47 @@ export default function App() {
     setFormCatch(null);
   }
 
-  async function handleFormSubmit(payload) {
-    try {
-      if (formCatch) {
-        await updateCatch(formCatch, payload);
-        setToast("Fångsten uppdaterades.");
-      } else {
-        await createCatch(payload);
-        setToast("Fångsten sparades.");
-      }
-      closeForm();
-    } catch (mutationError) {
-      setToast(mutationError.message || "Kunde inte spara fångsten.");
+  function openGalleryByRef(ref) {
+    if (typeof ref === "number") {
+      setGalleryIndex(ref >= 0 && ref < galleryItems.length ? ref : -1);
+      return;
     }
+
+    const index = galleryItems.findIndex((item) => item.id === ref);
+    setGalleryIndex(index);
   }
 
-  async function handleDelete(catchItem) {
-    const confirmed = window.confirm(`Ta bort ${catchItem.species} från ${catchItem.caughtAt}?`);
-    if (!confirmed) return;
+  function closeGallery() {
+    setGalleryIndex(-1);
+  }
+
+  function requestDelete(catchItem) {
+    setDeleteTarget(catchItem);
+  }
+
+  function closeDeleteModal() {
+    setDeleteTarget(null);
+  }
+
+  async function handleFormSubmit(payload) {
+    if (formCatch) {
+      await updateCatch(formCatch, payload);
+      setToast("Fångsten uppdaterades.");
+    } else {
+      await createCatch(payload);
+      setToast("Fångsten sparades.");
+    }
+    closeForm();
+  }
+
+  async function handleDeleteConfirmed() {
+    if (!deleteTarget) return;
 
     try {
-      await deleteCatch(catchItem);
+      await deleteCatch(deleteTarget);
       setToast("Fångsten togs bort.");
+      closeGallery();
+      closeDeleteModal();
     } catch (mutationError) {
       setToast(mutationError.message || "Kunde inte ta bort fångsten.");
     }
@@ -232,6 +251,7 @@ export default function App() {
             />
 
             <DashboardSection metrics={dashboardMetrics} />
+            <TrophyWallSection items={trophyWallItems} onOpenGallery={openGalleryByRef} />
 
             <FeedSection
               catches={filteredCatches}
@@ -242,13 +262,13 @@ export default function App() {
               canCreate={isAdmin}
               onOpenForm={openForm}
               onEdit={openForm}
-              onDelete={handleDelete}
+              onDelete={requestDelete}
               deletingId={deletingId}
-              onOpenGallery={setGalleryItem}
+              onOpenGallery={openGalleryByRef}
             />
 
             <StatsSection stats={stats} />
-            <GallerySection items={galleryItems} totalCatches={derivedCatches.length} onOpenGallery={setGalleryItem} />
+            <GallerySection items={galleryItems} totalCatches={derivedCatches.length} onOpenGallery={openGalleryByRef} />
 
             <SettingsSection
               authEnabled={authEnabled}
@@ -266,7 +286,27 @@ export default function App() {
 
       <MobileNav sections={SECTIONS} activeSection={activeSection} onNavigate={navigateTo} />
       <CatchFormModal open={formOpen} catchItem={formCatch} onClose={closeForm} onSubmit={handleFormSubmit} saving={saving} />
-      <GalleryModal item={galleryItem} onClose={() => setGalleryItem(null)} />
+      <DeleteCatchModal
+        catchItem={deleteTarget}
+        deleting={deletingId === deleteTarget?.id}
+        onCancel={closeDeleteModal}
+        onConfirm={handleDeleteConfirmed}
+      />
+      <GalleryModal
+        items={galleryItems}
+        activeIndex={galleryIndex}
+        onClose={closeGallery}
+        onNavigate={setGalleryIndex}
+        canEdit={isAdmin}
+        onEdit={(item) => {
+          closeGallery();
+          openForm(item);
+        }}
+        onDelete={(item) => {
+          closeGallery();
+          requestDelete(item);
+        }}
+      />
 
       <div className="toast-layer">
         <div className={`toast ${toast ? "show" : ""}`}>{toast}</div>
