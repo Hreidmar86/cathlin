@@ -1,4 +1,5 @@
 import CatchCard from "../catches/CatchCard";
+import CustomSelect from "../ui/CustomSelect";
 
 export default function FeedSection({
   catches,
@@ -13,6 +14,28 @@ export default function FeedSection({
   deletingId,
   onOpenGallery
 }) {
+  const speciesFilterOptions = [
+    { value: "all", label: "Alla arter" },
+    ...speciesOptions.map((option) => ({ value: option, label: option }))
+  ];
+
+  const anglerFilterOptions = [
+    { value: "all", label: "Alla fiskare" },
+    ...anglerOptions.map((option) => ({ value: option, label: option }))
+  ];
+
+  const sortFilterOptions = [
+    { value: "dateDesc", label: "Senaste först" },
+    { value: "lengthDesc", label: "Längd högst först" },
+    { value: "weightDesc", label: "Vikt högst först" }
+  ];
+
+  const releaseFilterOptions = [
+    { value: "all", label: "Alla fångster" },
+    { value: "released", label: "Återutsatt" },
+    { value: "kept", label: "Ej återutsatt" }
+  ];
+
   return (
     <section className="section" id="feed">
       <div className="section-head">
@@ -38,32 +61,30 @@ export default function FeedSection({
           />
         </div>
         <div className="filter-grid">
-          <select className="field" value={filters.species} onChange={(event) => onFilterChange("species", event.target.value)}>
-            <option value="all">Alla arter</option>
-            {speciesOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-          <select className="field" value={filters.angler} onChange={(event) => onFilterChange("angler", event.target.value)}>
-            <option value="all">Alla fiskare</option>
-            {anglerOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-          <select className="field" value={filters.sort} onChange={(event) => onFilterChange("sort", event.target.value)}>
-            <option value="dateDesc">Senaste först</option>
-            <option value="lengthDesc">Längd högst först</option>
-            <option value="weightDesc">Vikt högst först</option>
-          </select>
-          <select className="field" value={filters.release} onChange={(event) => onFilterChange("release", event.target.value)}>
-            <option value="all">Alla fångster</option>
-            <option value="released">Återutsatt</option>
-            <option value="kept">Ej återutsatt</option>
-          </select>
+          <CustomSelect
+            value={filters.species}
+            options={speciesFilterOptions}
+            ariaLabel="Filtrera på art"
+            onChange={(nextValue) => onFilterChange("species", nextValue)}
+          />
+          <CustomSelect
+            value={filters.angler}
+            options={anglerFilterOptions}
+            ariaLabel="Filtrera på fiskare"
+            onChange={(nextValue) => onFilterChange("angler", nextValue)}
+          />
+          <CustomSelect
+            value={filters.sort}
+            options={sortFilterOptions}
+            ariaLabel="Sortera fångster"
+            onChange={(nextValue) => onFilterChange("sort", nextValue)}
+          />
+          <CustomSelect
+            value={filters.release}
+            options={releaseFilterOptions}
+            ariaLabel="Filtrera på återutsättning"
+            onChange={(nextValue) => onFilterChange("release", nextValue)}
+          />
         </div>
       </div>
 

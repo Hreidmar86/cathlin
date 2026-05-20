@@ -55,7 +55,7 @@ export default function CatchCard({ item, canEdit, deleting, onEdit, onDelete, o
           {canEdit ? (
             <>
               <button className="icon-btn" type="button" onClick={() => onEdit(item)}>
-                Ändra
+                Redigera
               </button>
               <button className="icon-btn danger" type="button" onClick={() => onDelete(item)} disabled={deleting}>
                 {deleting ? "Tar bort..." : "Ta bort"}
