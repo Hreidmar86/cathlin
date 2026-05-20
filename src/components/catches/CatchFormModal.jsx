@@ -11,13 +11,10 @@ function buildInitialState(catchItem) {
     lengthCm: catchItem?.lengthCm || "",
     weightKg: catchItem?.weightKg || "",
     caughtAt: catchItem?.caughtAt || normalizeDate(new Date()),
-    tripName: catchItem?.tripName || "",
     location: catchItem?.location || "",
     method: catchItem?.method || "",
     weather: catchItem?.weather || "",
     lure: catchItem?.lure || "",
-    mood: catchItem?.mood || "",
-    tags: catchItem?.tags?.join(", ") || "",
     note: catchItem?.note || "",
     released: Boolean(catchItem?.released ?? true)
   };
@@ -211,10 +208,6 @@ export default function CatchFormModal({ open, catchItem, onClose, onSubmit, sav
                 />
               </div>
               <div className="field-stack">
-                <label htmlFor="tripInput">Tur/pass</label>
-                <input id="tripInput" className="field" value={form.tripName} onChange={(event) => updateField("tripName", event.target.value)} />
-              </div>
-              <div className="field-stack">
                 <label htmlFor="locationInput">Plats</label>
                 <input id="locationInput" className="field" value={form.location} onChange={(event) => updateField("location", event.target.value)} />
               </div>
@@ -229,14 +222,6 @@ export default function CatchFormModal({ open, catchItem, onClose, onSubmit, sav
               <div className="field-stack">
                 <label htmlFor="lureInput">Bete</label>
                 <input id="lureInput" className="field" value={form.lure} onChange={(event) => updateField("lure", event.target.value)} />
-              </div>
-              <div className="field-stack">
-                <label htmlFor="moodInput">Mood</label>
-                <input id="moodInput" className="field" value={form.mood} onChange={(event) => updateField("mood", event.target.value)} />
-              </div>
-              <div className="field-stack">
-                <label htmlFor="tagsInput">Taggar</label>
-                <input id="tagsInput" className="field" value={form.tags} onChange={(event) => updateField("tags", event.target.value)} placeholder="PB, kväll, grunt" />
               </div>
             </div>
 

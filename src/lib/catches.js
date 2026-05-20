@@ -42,19 +42,16 @@ function toBaseCatchRow(values, imageUrl) {
   return {
     angler: sanitizeText(values.angler, 24),
     species: sanitizeText(values.species, 24),
-    length: clampNumber(values.lengthCm ?? values.length, 0, 250),
-    weight: clampNumber(values.weightKg ?? values.weight, 0, 200),
-    date: normalizeDate(values.caughtAt ?? values.date),
+    length_cm: clampNumber(values.lengthCm ?? values.length, 0, 250),
+    weight_kg: clampNumber(values.weightKg ?? values.weight, 0, 200),
+    caught_at: normalizeDate(values.caughtAt ?? values.date),
     location: sanitizeText(values.location, 48),
     method: sanitizeText(values.method, 32),
     weather: sanitizeText(values.weather, 32),
     lure: sanitizeText(values.lure, 32),
     note: sanitizeText(values.note, 280),
-    photo_url: imageUrl || "",
-    mood: sanitizeText(values.mood, 24),
-    tags: sanitizeArray(values.tags),
-    released: Boolean(values.released),
-    trip_name: sanitizeText(values.tripName, 48)
+    image_url: imageUrl || "",
+    released: Boolean(values.released)
   };
 }
 
