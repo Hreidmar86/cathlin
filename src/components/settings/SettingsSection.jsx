@@ -3,15 +3,14 @@ import { useState } from "react";
 export default function SettingsSection({
   authEnabled,
   usingDemo,
-  username,
+  userEmail,
   isAdmin,
-  signInWithPassword,
+  signInWithMagicLink,
   signOut,
   catches,
   onExport
 }) {
-  const [loginName, setLoginName] = useState("Cathyyy");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [status, setStatus] = useState("");
   const [sending, setSending] = useState(false);
 
@@ -21,11 +20,10 @@ export default function SettingsSection({
     setStatus("");
 
     try {
-      await signInWithPassword(loginName, password);
-      setPassword("");
-      setStatus("Inloggad.");
+      await signInWithMagicLink(email);
+      setStatus("Magic link skickad.");
     } catch (error) {
-      setStatus(error.message || "Fel användarnamn eller lösenord.");
+      setStatus(error.message || "Kunde inte skicka magic link.");
     } finally {
       setSending(false);
     }
@@ -34,7 +32,6 @@ export default function SettingsSection({
   async function handleSignOut() {
     try {
       await signOut();
-      setPassword("");
       setStatus("Utloggad.");
     } catch (error) {
       setStatus(error.message || "Kunde inte logga ut.");
@@ -59,7 +56,7 @@ export default function SettingsSection({
             ) : isAdmin ? (
               <div className="admin-status">
                 <p className="admin-status-copy">
-                  Inloggad som <strong>{username || "admin"}</strong>.
+                  Inloggad som <strong>{userEmail || "admin"}</strong>.
                 </p>
                 <button className="btn primary" type="button" onClick={handleSignOut}>
                   Logga ut
@@ -68,40 +65,27 @@ export default function SettingsSection({
             ) : (
               <form className="admin-login-form" onSubmit={handleSignIn}>
                 <div className="field-stack">
-                  <label htmlFor="adminUsername">Användarnamn</label>
+                  <label htmlFor="adminEmail">E-post</label>
                   <input
-                    id="adminUsername"
+                    id="adminEmail"
                     className="field"
-                    type="text"
-                    value={loginName}
-                    onChange={(event) => setLoginName(event.target.value)}
-                    placeholder="Cathyyy"
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder="admin@example.com"
                     required
-                    autoComplete="username"
+                    autoComplete="email"
                     autoCapitalize="off"
                     spellCheck="false"
                   />
                 </div>
-                <div className="field-stack">
-                  <label htmlFor="adminPassword">Lösenord</label>
-                  <input
-                    id="adminPassword"
-                    className="field"
-                    type="password"
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                    placeholder="Lösenord"
-                    required
-                    autoComplete="current-password"
-                  />
-                </div>
                 <button className="btn primary" type="submit" disabled={sending}>
-                  {sending ? "Loggar in..." : "Logga in"}
+                  {sending ? "Skickar..." : "Skicka magic link"}
                 </button>
               </form>
             )}
             {status ? (
-              <p className={`admin-status-message ${status === "Inloggad." || status === "Utloggad." ? "is-success" : "is-error"}`}>
+              <p className={`admin-status-message ${status === "Magic link skickad." || status === "Utloggad." ? "is-success" : "is-error"}`}>
                 {status}
               </p>
             ) : null}

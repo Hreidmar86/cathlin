@@ -37,7 +37,7 @@ const INITIAL_FILTERS = {
 };
 
 export default function App() {
-  const { isAdmin, username, user, authEnabled, signInWithPassword, signOut } = useAuth();
+  const { isAdmin, user, userEmail, authEnabled, signInWithMagicLink, signOut } = useAuth();
   const { catches, loading, error, source, usingDemo, refresh } = useCatches();
   const { createCatch, updateCatch, deleteCatch, saving, deletingId } = useCatchMutations({
     user,
@@ -273,9 +273,9 @@ export default function App() {
             <SettingsSection
               authEnabled={authEnabled}
               usingDemo={usingDemo}
-              username={username}
+              userEmail={userEmail}
               isAdmin={isAdmin}
-              signInWithPassword={signInWithPassword}
+              signInWithMagicLink={signInWithMagicLink}
               signOut={signOut}
               catches={derivedCatches}
               onExport={exportJson}

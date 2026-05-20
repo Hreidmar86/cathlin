@@ -1,6 +1,6 @@
 # C&R Predators
 
-React + Vite + Supabase-version av fiskeloggen. Alla besökare kan läsa fångster, statistik och galleri utan inloggning. Endast Cathlin och Robin ska kunna logga in och skapa, ändra och ta bort catches.
+React + Vite + Supabase-version av fiskeloggen. Alla besökare kan läsa fångster, statistik och galleri utan inloggning. Endast tre admins ska kunna logga in och skapa, ändra och ta bort catches.
 
 ## Stack
 
@@ -47,7 +47,7 @@ cp .env.example .env
 
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
-- `VITE_ADMIN_EMAILS` i ordningen `Cathlin,Robin`
+- `VITE_ADMIN_EMAILS`
 - `VITE_TEAM_NAME`
 
 Exempel:
@@ -55,7 +55,7 @@ Exempel:
 ```env
 VITE_SUPABASE_URL=https://your-project-id.supabase.co
 VITE_SUPABASE_ANON_KEY=your-publishable-anon-key
-VITE_ADMIN_EMAILS=cathlin@example.com,robin@example.com
+VITE_ADMIN_EMAILS=fanisen@gmail.com,cathlin99@gmail.com,robin.hermansson91@hotmail.com
 VITE_TEAM_NAME=C&R
 ```
 
@@ -65,7 +65,7 @@ VITE_TEAM_NAME=C&R
 
 Viktigt:
 
-- Byt ut placeholder-mejlen `cathlin@example.com` och `robin@example.com` i SQL-policierna till de riktiga admin-adresserna innan du kör i produktion.
+- Byt ut placeholder-mejlen i SQL-policierna till de riktiga admin-adresserna innan du kör i produktion.
 - Frontend använder bara publishable/anon key.
 - Ingen service role key ska läggas i `.env`.
 
@@ -77,10 +77,7 @@ npm run dev
 
 ## Auth-flöde
 
-- Inloggning sker via Supabase password auth.
-- UI:t visar fortfarande `Användarnamn` + `Lösenord`.
-- `Cathyyy` mappas till den första e-postadressen i `VITE_ADMIN_EMAILS` (Cathlin).
-- `Robin` mappas till den andra e-postadressen i `VITE_ADMIN_EMAILS` (Robin).
+- Inloggning sker via Supabase magic link med e-postadress.
 - UI visar admin-kontroller bara för sessioner vars e-post finns i `VITE_ADMIN_EMAILS`.
 - Den riktiga säkerheten ligger i RLS-policierna i databasen och Storage, inte i frontend.
 
@@ -122,7 +119,7 @@ npm run dev
 
 ## Admin beteende
 
-- logga in med användarnamn + lösenord
+- logga in med e-post via magic link
 - skapa catch
 - ladda upp bild
 - ändra catch
@@ -133,9 +130,3 @@ npm run dev
 ```bash
 npm run build
 ```
-
-## Nästa naturliga steg
-
-- lägga till Supabase migrations i versionsstyrd form
-- lägga till bättre felhantering kring Storage-delete vid edit/delete
-- lägga till optimerad bildhantering och ev. transformering

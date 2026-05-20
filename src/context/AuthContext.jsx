@@ -4,25 +4,6 @@ import { supabase, isSupabaseConfigured } from "../lib/supabase";
 
 const AuthContext = createContext(null);
 
-const LOGIN_USERS = [
-  { username: "Cathyyy", email: ADMIN_EMAILS[0] || "" },
-  { username: "Robin", email: ADMIN_EMAILS[1] || "" }
-];
-
-const USERNAME_TO_EMAIL = {
-  cathyyy: LOGIN_USERS[0].email,
-  robin: LOGIN_USERS[1].email
-};
-
-const EMAIL_TO_USERNAME = Object.fromEntries(
-  LOGIN_USERS.filter((user) => user.email).map((user) => [user.email.toLowerCase(), user.username])
-);
-
-function resolveEmailFromUsername(username) {
-  const normalizedUsername = String(username || "").trim().toLowerCase();
-  return USERNAME_TO_EMAIL[normalizedUsername] || "";
-}
-
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(isSupabaseConfigured);
@@ -52,24 +33,18 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  async function signInWithPassword(username, password) {
+  async function signInWithMagicLink(email) {
     if (!supabase) throw new Error("Supabase är inte konfigurerat.");
 
-    const email = resolveEmailFromUsername(username);
-    const normalizedPassword = String(password || "");
-
-    if (!email) {
-      throw new Error("Fel användarnamn eller lösenord.");
-    }
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password: normalizedPassword
+    const normalizedEmail = String(email || "").trim().toLowerCase();
+    const { error } = await supabase.auth.signInWithOtp({
+      email: normalizedEmail,
+      options: {
+        shouldCreateUser: false
+      }
     });
 
-    if (error) {
-      throw new Error("Fel användarnamn eller lösenord.");
-    }
+    if (error) throw error;
   }
 
   async function signOut() {
@@ -80,17 +55,15 @@ export function AuthProvider({ children }) {
 
   const value = useMemo(() => {
     const email = session?.user?.email?.toLowerCase() || "";
-    const username = EMAIL_TO_USERNAME[email] || "";
 
     return {
       session,
       user: session?.user ?? null,
       userEmail: email,
-      username,
       isAdmin: Boolean(email && ADMIN_EMAILS.includes(email)),
       loading,
       authEnabled: isSupabaseConfigured,
-      signInWithPassword,
+      signInWithMagicLink,
       signOut
     };
   }, [session, loading]);
