@@ -2,7 +2,7 @@ import { useState } from "react";
 import { STORAGE_BUCKET } from "../lib/config";
 import { slugify } from "../lib/format";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
-import { toCatchRow } from "../lib/catches";
+import { toInsertCatchRow, toUpdateCatchRow } from "../lib/catches";
 
 function getFileExtension(file) {
   return file?.name?.split(".").pop()?.toLowerCase() || "jpg";
@@ -53,7 +53,14 @@ export function useCatchMutations({ user, onChanged }) {
         imageUrl = upload.publicUrl;
       }
 
-      const payload = toCatchRow(values, imageUrl, user?.id);
+      const createdBy = user?.id || undefined;
+      const payload = toInsertCatchRow(values, imageUrl, createdBy);
+
+      if (import.meta.env.DEV) {
+        console.log("Creating catch payload:", payload);
+        console.log("Creating catch as user:", user?.email || "unknown");
+      }
+
       const { error } = await supabase.from("catches").insert(payload);
       if (error) throw error;
       await onChanged?.();
@@ -84,7 +91,7 @@ export function useCatchMutations({ user, onChanged }) {
         imageUrl = "";
       }
 
-      const payload = toCatchRow(values, imageUrl);
+      const payload = toUpdateCatchRow(values, imageUrl);
       const { error } = await supabase.from("catches").update(payload).eq("id", existingCatch.id);
       if (error) throw error;
       await onChanged?.();
