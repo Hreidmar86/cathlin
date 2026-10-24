@@ -1,132 +1,41 @@
-# C&R Predators
+# Vildmarken – Resan Hem
 
-React + Vite + Supabase-version av fiskeloggen. Alla besökare kan läsa fångster, statistik och galleri utan inloggning. Endast tre admins ska kunna logga in och skapa, ändra och ta bort catches.
+Ett barnvänligt survival-lite-spel i React och Canvas. Utforska en illustrerad skog, samla resurser, bygg ditt läger och hitta hem med hjälp av ett räddningsflygplan.
 
-## Stack
+## Starta
 
-- React
-- Vite
-- Supabase Auth
-- Supabase Database
-- Supabase Storage
-
-## Projektstruktur
-
-```text
-.
-├─ public/
-├─ src/
-│  ├─ components/
-│  ├─ context/
-│  ├─ hooks/
-│  ├─ lib/
-│  └─ styles/
-├─ supabase/
-│  └─ schema.sql
-├─ .env.example
-├─ index.html
-├─ package.json
-└─ vite.config.js
-```
-
-## Setup
-
-1. Installera beroenden:
+Kräver Node.js 22.12+ (miljön använder Node 24).
 
 ```bash
-npm install
+npm ci --cache /tmp/cathlin-npm-cache --no-audit --no-fund
+npm run dev -- --host 0.0.0.0
 ```
 
-2. Kopiera env-filen:
-
-```bash
-cp .env.example .env
-```
-
-3. Fyll i:
-
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_ANON_KEY`
-- `VITE_ADMIN_EMAILS`
-- `VITE_TEAM_NAME`
-
-Exempel:
-
-```env
-VITE_SUPABASE_URL=https://your-project-id.supabase.co
-VITE_SUPABASE_ANON_KEY=your-publishable-anon-key
-VITE_ADMIN_EMAILS=fanisen@gmail.com,cathlin99@gmail.com,robin.hermansson91@hotmail.com
-VITE_TEAM_NAME=C&R
-```
-
-4. Skapa ett Supabase-projekt.
-
-5. Kör SQL i Supabase SQL Editor från `supabase/schema.sql`.
-
-Viktigt:
-
-- Byt ut placeholder-mejlen i SQL-policierna till de riktiga admin-adresserna innan du kör i produktion.
-- Frontend använder bara publishable/anon key.
-- Ingen service role key ska läggas i `.env`.
-
-6. Starta lokalt:
-
-```bash
-npm run dev
-```
-
-## Auth-flöde
-
-- Inloggning sker via Supabase magic link med e-postadress.
-- UI visar admin-kontroller bara för sessioner vars e-post finns i `VITE_ADMIN_EMAILS`.
-- Den riktiga säkerheten ligger i RLS-policierna i databasen och Storage, inte i frontend.
-
-## Storage
-
-- Bucket: `catch-photos`
-- Bilder laddas upp från admin-formuläret
-- `photo_url` sparas i tabellen `catches`
-- Public read är aktiverad på bucket-objekten via policy
-
-## RLS-sammanfattning
-
-### `public.catches`
-
-- Public `SELECT`
-- Endast allowlistade authenticated users får `INSERT`
-- Endast allowlistade authenticated users får `UPDATE`
-- Endast allowlistade authenticated users får `DELETE`
-
-### `storage.objects` för `catch-photos`
-
-- Public `SELECT`
-- Endast allowlistade authenticated users får `INSERT`
-- Endast allowlistade authenticated users får `UPDATE`
-- Endast allowlistade authenticated users får `DELETE`
-
-## Dev fallback
-
-- Om Supabase inte är konfigurerat i utvecklingsläge visar appen demo-data i read-only-läge.
-- Demo/fallback används inte som primär datakälla i produktion.
-- Utan Supabase-konfiguration finns ingen admin-inloggning och inga write-actions.
-
-## Public beteende
-
-- läsa catches
-- se statistik
-- se galleri
-- se publika bilder från Storage
-
-## Admin beteende
-
-- logga in med e-post via magic link
-- skapa catch
-- ladda upp bild
-- ändra catch
-- ta bort catch
-
-## Bygg
+Spelet körs helt i webbläsaren. Inga API-nycklar, databaser eller externa tjänster behövs. Befintliga Supabase-filer kommer från det tidigare projektet och används inte av spelet.
 
 ```bash
 npm run build
+npm run preview -- --host 0.0.0.0
 ```
+
+## Spela
+
+- Flytta med WASD, piltangenter eller genom att klicka/trycka i skogen.
+- Gå nära pinnar, stenar eller bär och tryck E, mellanslag eller knappen **Samla / använd**.
+- Bygg lägereld, tält, fackla, slangbella och signalmast med byggrecepten.
+- Ät bär från ryggsäcken. Vid elden ger de mer energi och lite hälsa.
+- Smyg med Shift under natten. Eld och facklor ger trygghet. Slangbellan skrämmer bort närliggande skogsbusar med E.
+- Sov i tältet genom byggpanelen när du är nära lägret. Du vaknar med full hälsa och värme.
+- Möt väktaren i nordost med slangbellan. Fem träffar lugnar honom. Med en byggd signalmast kan du sedan signalera från bergspasset med E.
+
+En dag/natt-cykel tar tre minuter. Hunger och kyla påverkar hälsan försiktigt. Om hälsan tar slut återvänder du till lägret med alla saker kvar. Resurser återkommer efter 45 sekunder. Paneler pausar spelet; Escape stänger paneler eller pausar.
+
+Framsteg sparas lokalt i webbläsaren. Starta om via Inställningar → Börja ett nytt äventyr. Sparningen tillhör den aktuella webbläsaren och adressen; den synkas inte mellan enheter.
+
+## Struktur
+
+- `src/App.jsx`: gränssnitt, kontroller och spelregler.
+- `src/game.js`: deterministisk spelvärld och Canvas-rendering.
+- `src/styles/global.css`: responsiv layout och illustrationens gränssnitt.
+
+Detta är en spelbar prototyp för webbläsare, med förenklad väktarstrid och räddningssekvens. Konsolstöd, handkontroll och flerspelarläge ingår inte.
