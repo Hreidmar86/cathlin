@@ -2,7 +2,15 @@
 
 Ett barnvänligt survival-lite-spel i React och Canvas. Utforska en illustrerad skog, samla resurser, bygg ditt läger och hitta hem med hjälp av ett räddningsflygplan.
 
-## Starta
+## Spela direkt – utan installation
+
+1. Ladda ned ZIP-filen från grenen **vildmarken-resan-hem** på GitHub.
+2. Packa upp ZIP-filen (i Windows: högerklicka → Extrahera alla).
+3. Dubbelklicka på **SPELA-VILDMARKEN.html** i den uppackade mappen.
+
+Spelet öppnas i Chrome, Edge eller Firefox. Ingen terminal, Node.js eller internetanslutning behövs för den filen. Öppna filen med en webbläsare om Windows frågar efter ett program. Den vanliga `index.html` är utvecklingsversionens startpunkt och ska köras via Vite.
+
+## Utveckla spelet
 
 Kräver Node.js 22.12+ (miljön använder Node 24).
 
@@ -18,7 +26,13 @@ npm run build
 npm run preview -- --host 0.0.0.0
 ```
 
-## Spela
+Bygg om den fristående spelfilen efter kodändringar:
+
+```bash
+npm run build:standalone
+```
+
+## Kontroller
 
 - Flytta med WASD, piltangenter eller genom att klicka/trycka i skogen.
 - Gå nära pinnar, stenar eller bär och tryck E, mellanslag eller knappen **Samla / använd**.
